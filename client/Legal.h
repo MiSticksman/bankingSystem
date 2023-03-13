@@ -1,7 +1,6 @@
 #ifndef LEGAL_H
 #define LEGAL_H
 
-
 #include <utility>
 
 #include "Client.h"
@@ -12,7 +11,7 @@ public:
     Legal(std::string p_full_name) : Client(std::move(p_full_name)) {}
 
 public:
-    void makeDepositTransfer(Bank *bank_from, Bank *bank_to, float sum);
+    void makeTransferToAnotherBank(Bank *bank_from, Bank *bank_to, Client *receiver, float sum);
 };
 
 

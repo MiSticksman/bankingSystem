@@ -4,9 +4,9 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "Legal.h"
 
 class Client;
+class Legal;
 class Bank
 {
 private:
@@ -23,10 +23,10 @@ public:
     float getBankAccount() const;
     float getBankPercent() const;
     std::map<std::string, float> getClientsAccounts();
-    void depositScoreByFullName(Client *client, float sum);
-    void withdrawScoreByFullName(Client *client, float sum);
-    void makeDepositTransferForLegalEntity(Legal *legal_client, Bank *bank_from, Bank *bank_to, float sum);
-    void makeWithdrawTransferForLegalEntity(Legal *legal_client, Bank *bank_from, Bank *bank_to, float sum);
+    void depositScore(Client *client, float sum);
+    void withdrawScore(Client *client, float sum);
+    void transferMoneyInsideBank(Client *giver, Client *receiver, float sum);
+    void makeDepositTransferForLegalEntity( Bank *bank_to, Legal *legal_client, Client *receiver, float sum);
     int getNumberOfClients();
     void addClient(Client *client);
     void removeClient(Client *client);

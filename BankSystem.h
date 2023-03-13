@@ -3,7 +3,7 @@
 
 #include<vector>
 
-#include "Bank.h"
+#include "bank/Bank.h"
 
 class BankSystem
 {

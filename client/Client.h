@@ -17,8 +17,10 @@ public:
 
     void setFullName(std::string);
    
-    void depositMoney(Bank*, float);
-    void withdrawMoney(Bank*, float);
+    void depositMoney(Bank* bank, float sum);
+    void withdrawMoney(Bank* bank, float sum);
+    void transferMoney(Bank* bank, Client *receiver, float sum);
+    void checkBalance(Bank *bank);
 };
 
 #endif

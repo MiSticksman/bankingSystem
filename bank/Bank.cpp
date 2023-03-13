@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include "Bank.h"
-#include "Client.h"
+#include "../client/Client.h"
+#include "../client/Legal.h"
 
 Bank::Bank(std::string b_name)
 {
@@ -35,13 +36,13 @@ std::string Bank::getName() {
     return this->name;
 }
 
-void Bank::depositScoreByFullName(Client *client, float sum)
+void Bank::depositScore(Client *client, float sum)
 {
     std::string client_name = client->getFullName();
     this->clients_accounts[client_name] += sum;
 }
 
-void Bank::withdrawScoreByFullName(Client *client, float sum)
+void Bank::withdrawScore(Client *client, float sum)
 {
     std::string client_name = client->getFullName();
     float dif = this->clients_accounts[client_name] - sum;
@@ -53,18 +54,33 @@ void Bank::withdrawScoreByFullName(Client *client, float sum)
     this->clients_accounts[client_name] -= sum;
 }
 
-void Bank::makeDepositTransferForLegalEntity(Legal *legal_client, Bank *bank_from, Bank *bank_to, float sum)
-{
-    std::string legal_client_name = legal_client->getFullName();
-    float score_from = bank_from->clients_accounts[legal_client_name];
-
-
+void Bank::transferMoneyInsideBank(Client *giver, Client *receiver, float sum) {
+    std::string giver_name = giver->getFullName();
+    std::string receiver_name = receiver->getFullName();
+    float giver_sum = this->clients_accounts[giver_name];
+    if (giver_sum < sum)
+    {
+        std::cout << "У вас недостаточно средств!" << "\n";
+        return;
+    }
+    this->clients_accounts[giver_name] -= sum + this->bank_percent/100 * sum;
+    this->bank_account += this->bank_percent/100 * sum;
+    this->clients_accounts[receiver_name] += sum ;
 }
 
-void Bank::makeWithdrawTransferForLegalEntity(Legal *legal_client, Bank *bank_from, Bank *bank_to, float sum)
+void Bank::makeDepositTransferForLegalEntity(Bank *bank_to, Legal *legal_client, Client *receiver, float sum)
 {
     std::string legal_client_name = legal_client->getFullName();
-    float score_from = bank_from->clients_accounts[legal_client_name];
+    float score_from = this->clients_accounts[legal_client_name];
+    if (score_from < sum)
+    {
+        std::cout << "У вас недостаточно средств!" << "\n";
+        return;
+    }
+    this->clients_accounts[legal_client_name] -= sum + this->bank_percent/100 * sum;
+    this->bank_account += this->bank_percent/100 * sum;
+    bank_to->clients_accounts[receiver->getFullName()] += sum;
+
 }
 
 std::map<std::string, float> Bank::getClientsAccounts() {
