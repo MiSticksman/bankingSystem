@@ -18,6 +18,7 @@ public:
 public:
     std::string getFullName();
     int getPersonalCode();
+    static std::vector<int>getCodes();
     void setFullName(std::string);
     void depositMoney(Bank* bank, float sum);
     void withdrawMoney(Bank* bank, float sum);
