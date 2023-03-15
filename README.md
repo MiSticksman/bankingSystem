@@ -1,5 +1,4 @@
 # bankingSystem
-My first project on C++
 
 2.	
 Банковская система. Можно создать несколько банков. 
