@@ -2,19 +2,33 @@
 
 #include "bank/Bank.h"
 #include "client/Client.h"
-#include "BankSystem.h"
+#include "bank/BankSystem.h"
 #include "client/Physical.h"
 #include "client/Legal.h"
 
 int main(int, char**) {
 
-//    Physical client("Vadim Shaforostov");
-//    Legal client2("Pasha Raspopov");
+    Physical client("Vadim Shaforostov");
+    Legal client2("Pasha Raspopov");
     Bank bank("Sberbank");
     Bank bank2("Gazprombank");
     BankSystem bankSystem;
     bankSystem.addBank(&bank);
     bankSystem.addBank(&bank2);
+    bank.addClient(&client2);
+    client.depositMoney(&bank, 300);
+    client2.depositMoney(&bank2, 100);
+
+//    client.transferMoney(&bank, &client2, 200);
+
+    client2.makeTransferToAnotherBank(&bank2, &bank, &client, 90);
+    bank2.printClients();
+    bank.printClients();
+//    Physical client3("Vadim Shaforostov");
+
+//    bank.printClients();
+//    bank2.printClients();
+//    bank.printClient(&client2);
 //    std::cout << "Количество банков: " << bankSystem.getNumberOfBanks() << "\n";
 //    bankSystem.printBanks();
 //    bankSystem.removeBank(&bank);

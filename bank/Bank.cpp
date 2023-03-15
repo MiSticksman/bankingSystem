@@ -4,6 +4,8 @@
 #include "../client/Client.h"
 #include "../client/Legal.h"
 
+#include<cstdlib>
+
 Bank::Bank(std::string b_name)
 {
     this->name = std::move(b_name);
@@ -11,11 +13,10 @@ Bank::Bank(std::string b_name)
     this->bank_percent = 10;
 }
 
-Bank::Bank(std::string b_name, float b_bank_account)
+Bank::Bank(std::string b_name, float b_bank_percent)
 {
     this->name = std::move(b_name);
-    this->bank_account = b_bank_account;
-    this->bank_percent = 10;
+    this->bank_percent = b_bank_percent;
 }
 Bank::Bank(std::string b_name, float b_bank_account, float b_bank_percent)
 {
@@ -38,72 +39,92 @@ std::string Bank::getName() {
 
 void Bank::depositScore(Client *client, float sum)
 {
-    std::string client_name = client->getFullName();
-    this->clients_accounts[client_name] += sum;
+    this->clients_accounts[client] += sum;
 }
 
 void Bank::withdrawScore(Client *client, float sum)
 {
-    std::string client_name = client->getFullName();
-    float dif = this->clients_accounts[client_name] - sum;
+    float dif = this->clients_accounts[client] - sum;
     if (dif < 0)
     {
-        std::cout << "Вы не можете снять " << sum <<"! Ваш баланс: " << this->clients_accounts[client_name] << "\n";
+        std::cout << "Вы не можете снять " << sum <<"! Ваш баланс: " << this->clients_accounts[client] << "\n";
         return;
     }
-    this->clients_accounts[client_name] -= sum;
+    this->clients_accounts[client] -= sum;
 }
 
 void Bank::transferMoneyInsideBank(Client *giver, Client *receiver, float sum) {
-    std::string giver_name = giver->getFullName();
-    std::string receiver_name = receiver->getFullName();
-    float giver_sum = this->clients_accounts[giver_name];
-    if (giver_sum < sum)
+    float giver_sum = this->clients_accounts[giver];
+    std::cout << "Вы собираетесь перевести: " << sum << ", банк взимает: "
+    << this->bank_percent / 100 * sum << ". Итого Вы заплатите: " << sum + this->bank_percent / 100 * sum << "\n";
+    if (giver_sum < sum + this->bank_percent / 100 * sum)
     {
         std::cout << "У вас недостаточно средств!" << "\n";
         return;
     }
-    this->clients_accounts[giver_name] -= sum + this->bank_percent/100 * sum;
+    if (this->clients_accounts.find(receiver) == this->clients_accounts.end() ) {
+        std::cout << "Такого клиента нет!" << "\n";
+        return;
+    }
+    this->clients_accounts[giver] -= sum + this->bank_percent / 100 * sum;
     this->bank_account += this->bank_percent/100 * sum;
-    this->clients_accounts[receiver_name] += sum ;
+    this->clients_accounts[receiver] += sum ;
 }
 
 void Bank::makeDepositTransferForLegalEntity(Bank *bank_to, Legal *legal_client, Client *receiver, float sum)
 {
-    std::string legal_client_name = legal_client->getFullName();
-    float score_from = this->clients_accounts[legal_client_name];
-    if (score_from < sum)
+    float giver_sum = this->clients_accounts[legal_client];
+    std::cout << "Вы собираетесь перевести: " << sum << ", банк взимает: "
+              << this->bank_percent / 100 * sum << ". Итого Вы заплатите: "
+              << sum + this->bank_percent / 100 * sum << "\n";
+    if (giver_sum < sum + this->bank_percent / 100 * sum)
     {
         std::cout << "У вас недостаточно средств!" << "\n";
         return;
     }
-    this->clients_accounts[legal_client_name] -= sum + this->bank_percent/100 * sum;
+    if (bank_to->clients_accounts.find(receiver) == bank_to->clients_accounts.end() ) {
+        std::cout << "Такого клиента нет!" << "\n";
+        return;
+    }
+    this->clients_accounts[legal_client] -= sum + this->bank_percent/100 * sum;
     this->bank_account += this->bank_percent/100 * sum;
-    bank_to->clients_accounts[receiver->getFullName()] += sum;
+    bank_to->clients_accounts[receiver] += sum;
 
 }
 
-std::map<std::string, float> Bank::getClientsAccounts() {
+std::map<Client*, float> Bank::getClientsAccounts() {
     return this->clients_accounts;
 }
+
 
 int Bank::getNumberOfClients() {
     return this->clients_accounts.size();
 }
 
 void Bank::addClient(Client *client) {
-    clients_accounts[client->getFullName()] = 0;
+    clients_accounts[client] = 0;
 }
 
 void Bank::removeClient(Client *client) {
-    clients_accounts.erase(client->getFullName());
+    clients_accounts.erase(client);
 }
 
 void Bank::printClients() {
-    std::cout << this->name << std::endl;
+    std::cout << this->name << "(" << this->clients_accounts.size() << " clients), bank percent - "
+    << this->bank_percent << "%, bank account = " << this->bank_account << std::endl;
     for (auto const &pair: this->clients_accounts) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+        std::cout << pair.first->getPersonalCode() << ": " << pair.first->getFullName()
+        << " (balance = " << pair.second << ")\n";
     }
 }
+
+void Bank::printClient(Client *client) {
+    for (auto const &pair: this->clients_accounts) {
+        if (pair.first == client)
+        std::cout << pair.first->getPersonalCode() << ": " << pair.first->getFullName()
+                  << " (balance = " << pair.second << ")\n";
+    }
+}
+
 
 
