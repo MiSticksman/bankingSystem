@@ -15,6 +15,7 @@ private:
 
 public:
     Client(std::string c_full_name);
+    virtual ~Client() = default;
 public:
     std::string getFullName();
     int getPersonalCode();

@@ -32,6 +32,8 @@ public:
     void removeClient(Client *client);
     void printClients();
     void printClient(Client *client);
+    std::vector<Legal*> getLegals();
+    static bool clientIsLegal(Client *client);
 
 };
 

@@ -36,10 +36,20 @@ std::string Bank::getName() {
 }
 
 void Bank::depositScore(Client *client, float sum) {
+    if (clients_accounts.find(client) == clients_accounts.end())
+    {
+        std::cout << "Такого клиента нет!\n";
+        return;
+    }
     this->clients_accounts[client] += sum;
 }
 
 void Bank::withdrawScore(Client *client, float sum) {
+    if (clients_accounts.find(client) == clients_accounts.end())
+    {
+        std::cout << "Такого клиента нет!\n";
+        return;
+    }
     float dif = this->clients_accounts[client] - sum;
     if (dif < 0) {
         std::cout << "Вы не можете снять " << sum << "! Ваш баланс: " << this->clients_accounts[client] << "\n";
@@ -115,8 +125,15 @@ void Bank::printClients() {
     std::cout << this->name << "(" << this->clients_accounts.size() << " clients), bank percent - "
               << this->bank_percent << "%, bank account = " << this->bank_account << std::endl;
     for (auto const &pair: this->clients_accounts) {
-        std::cout << pair.first->getPersonalCode() << ": " << pair.first->getFullName()
-                  << " (balance = " << pair.second << ")\n";
+        if (clientIsLegal(pair.first))
+        {
+            std::cout << pair.first->getPersonalCode() << ": " << "<legal> " << pair.first->getFullName()
+                      << " (balance = " << pair.second << ")\n";
+        } else {
+            std::cout << pair.first->getPersonalCode() << ": " << "<physical> " << pair.first->getFullName()
+                      << " (balance = " << pair.second << ")\n";
+        }
+
     }
 }
 
@@ -126,6 +143,27 @@ void Bank::printClient(Client *client) {
             std::cout << pair.first->getPersonalCode() << ": " << pair.first->getFullName()
                       << " (balance = " << pair.second << ")\n";
     }
+}
+
+//std::vector<Legal*> Bank::getLegals() {
+//    std::vector<Legal*> legals;
+//    for (auto const &pair: this->clients_accounts) {
+//            std::cout << typeid(pair.first).name() << "\n";
+//            if (dynamic_cast<Legal*>(pair.first))
+//            {
+//
+//            }
+//            legals.push_back(dynamic_cast<Legal*>(pair.first));
+//    }
+//    return legals;
+//}
+
+bool Bank::clientIsLegal(Client *client) {
+    if (dynamic_cast<Legal*>(client))
+    {
+        return true;
+    }
+    return false;
 }
 
 
